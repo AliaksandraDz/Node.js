@@ -10,7 +10,7 @@ dishRouter.route('/')
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/plain');
     next(); //will pass the req res params for /dishes endpoint to next method,
-    //  which is in our case is app.get for /dishes
+    //  which is app.get in our case
 })
 .get((req,res,next) => {
     res.end('Will send all the dishes to you!');
