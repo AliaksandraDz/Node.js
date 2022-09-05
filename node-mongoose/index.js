@@ -9,16 +9,15 @@ connect.then((db) => {
 
     console.log('Connected correctly to server');
 
-    var newDish = Dishes({
+    Dishes.create({
         name: 'Uthappizza',
         description: 'test'
-    });
-
-    newDish.save()
+    })
+    // newDish.save() //The save() method returns a promise. If save() succeeds, the promise resolves to the document that was saved.
         .then((dish) => {
             console.log(dish);
 
-            return Dishes.find({});
+            return Dishes.find({}).exec(); //Queries do return a thenable, but if you need a real Promise you should use the exec method. 
         })
         .then((dishes) => {
             console.log(dishes);
