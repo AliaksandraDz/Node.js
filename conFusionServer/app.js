@@ -53,42 +53,24 @@ app.use(session({
   store: new FileStore()
 }));
 
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
+
 function auth (req, res, next) {
   console.log(req.session);
 
-  if (!req.session.user) {
-    var authHeader = req.headers.authorization;
-    if (!authHeader) {
-        var err = new Error('You are not authenticated!');
-        res.setHeader('WWW-Authenticate', 'Basic');   // (name, value)           
-        err.status = 401;
-        next(err);
-        return;
+  if (!req.session.user) { //if no session was created before
+        var err = new Error('You are not authenticated!');      
+        err.status = 403;
+        return next(err);
     }
-    var auth = new Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':');
-      // Buffer.from(obj, encoding)
-  //authorization: 'Basic YWRtaW46cGFzc3dvcmQ=' - split after ' ', make it to string,
-  // it will become username:password, we split it
-    var user = auth[0];
-    var pass = auth[1];
-    if (user == 'admin' && pass == 'password') {
-        req.session.user = 'admin';
-        next(); // authorized
-    } else {
-        var err = new Error('You are not authenticated!');
-        res.setHeader('WWW-Authenticate', 'Basic');              
-        err.status = 401;
-        next(err);
-    }
-  }
-  else {
-      if (req.session.user === 'admin') {
-          console.log('req.session: ',req.session);
+  else { //if a session was created before
+      if (req.session.user === 'authenticated') {  // if authorization was correct
           next();
       }
-      else {
+      else {  // if authorization was incorrect
           var err = new Error('You are not authenticated!');
-          err.status = 401;
+          err.status = 403;
           next(err);
       }
   }
@@ -100,9 +82,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/dishes',dishRouter);
 app.use('/promotions',promoRouter);
 app.use('/leaders',leaderRouter);
-
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
