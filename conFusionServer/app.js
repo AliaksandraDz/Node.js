@@ -5,6 +5,8 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var session = require('express-session');
 var FileStore = require('session-file-store')(session);
+var passport = require('passport');
+var authenticate = require('./authenticate');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -53,26 +55,24 @@ app.use(session({
   store: new FileStore()
 }));
 
+app.use(passport.initialize()); //passport.initialize() is a middle-ware that initialises Passport. 
+//basically passport.initialize() initialises the authentication module. 
+app.use(passport.session()); // passport.session() acts as a middleware to alter the req object and change the 'user' value 
+//that is currently the session id (from the client cookie) into the true deserialized user object.
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 function auth (req, res, next) {
-  console.log(req.session);
+  console.log(req.user);
 
-  if (!req.session.user) { //if no session was created before
-        var err = new Error('You are not authenticated!');      
-        err.status = 403;
-        return next(err);
-    }
-  else { //if a session was created before
-      if (req.session.user === 'authenticated') {  // if authorization was correct
-          next();
-      }
-      else {  // if authorization was incorrect
-          var err = new Error('You are not authenticated!');
-          err.status = 403;
-          next(err);
-      }
+  if (!req.user) {
+    var err = new Error('You are not authenticated!');
+    err.status = 403;
+    next(err);
+  }
+  else {
+        next();
   }
 }
 

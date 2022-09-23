@@ -99,7 +99,7 @@ dishRouter.route('/:dishId/comments')
     .then((dish) => {
         if (dish != null) {
             dish.comments.push(req.body);
-            dish.save()
+            dish.save() //The save() method returns a promise. If save() succeeds, the promise resolves to the document that was saved.
             .then((dish) => {
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'application/json');
