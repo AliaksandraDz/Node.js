@@ -7,6 +7,7 @@ var session = require('express-session');
 var FileStore = require('session-file-store')(session);
 var passport = require('passport');
 var authenticate = require('./authenticate');
+var config = require('./config');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -20,7 +21,7 @@ const Dishes = require('./models/dishes');
 const Promotions = require('./models/promotions');
 const Leaders = require('./models/leaders');
 
-const url = 'mongodb://localhost:27017/conFusion';
+const url = config.mongoUrl;
 const connect = mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false });
 
 connect.then((db) => {
@@ -44,41 +45,42 @@ app.use(express.urlencoded({ extended: false }));
 //If no secret is provided to cookie-parser (or another middleware), 
 //then express will throw an error when trying to set a new signed cookie.
 
-app.use(session({
-  name: 'session-id', //The name of the session ID cookie to set in the response (and read from in the request)
-  secret: '12345-67890-09876-54321', //It is a required option and is used for signing the session ID cookie.
-  saveUninitialized: false, //If during the lifetime of the request the session object isn't modified then, 
-  //at the end of the request and when saveUninitialized is false, the (still empty, because unmodified)
-  // session object will not be stored in the session store.
-  resave: false, //if true - tell the session store that a particular session is still active,
-  // which is necessary because some stores will delete unused sessions after some time.
-  store: new FileStore()
-}));
+// app.use(session({
+//   name: 'session-id', //The name of the session ID cookie to set in the response (and read from in the request)
+//   secret: '12345-67890-09876-54321', //It is a required option and is used for signing the session ID cookie.
+//   saveUninitialized: false, //If during the lifetime of the request the session object isn't modified then, 
+//   //at the end of the request and when saveUninitialized is false, the (still empty, because unmodified)
+//   // session object will not be stored in the session store.
+//   resave: false, //if true - tell the session store that a particular session is still active,
+//   // which is necessary because some stores will delete unused sessions after some time.
+//   store: new FileStore()
+// }));
 
 app.use(passport.initialize()); //passport.initialize() is a middle-ware that initialises Passport. 
 //basically passport.initialize() initialises the authentication module. 
-app.use(passport.session()); // passport.session() acts as a middleware to alter the req object and change the 'user' value 
-//that is currently the session id (from the client cookie) into the true deserialized user object.
+// app.use(passport.session()); // passport.session() acts as a middleware to alter the req object and change the 'user' value 
+// //that is currently the session id (from the client cookie) into the true deserialized user object.
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-function auth (req, res, next) {
-  console.log(req.user);
+// function auth (req, res, next) {
+//   console.log(req.user);
 
-  if (!req.user) {
-    var err = new Error('You are not authenticated!');
-    err.status = 403;
-    next(err);
-  }
-  else {
-        next();
-  }
-}
+//   if (!req.user) {
+//     var err = new Error('You are not authenticated!');
+//     err.status = 403;
+//     next(err);
+//   }
+//   else {
+//         next();
+//   }
+// }
 
-app.use(auth);
+// app.use(auth);
 
 app.use(express.static(path.join(__dirname, 'public')));
+
 app.use('/dishes',dishRouter);
 app.use('/promotions',promoRouter);
 app.use('/leaders',leaderRouter);
