@@ -7,7 +7,7 @@ var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 
 var config = require('./config.js');
 
-//export passport strategy:
+//With the strategy configured, it is then registered by calling .use():
 passport.use(new LocalStrategy(User.authenticate()));
 
 //If authentication succeeds, a session will be established and maintained via a cookie set in the user’s browser.
@@ -19,13 +19,12 @@ passport.deserializeUser(User.deserializeUser());
 //The serializeUser() function sets an id as the cookie in the user’s browser,
 // and the deserializeUser() function uses the id to look up the user in the database and retrieve the user object with data. 
 
-exports.getToken = function(user) { //create token (kinda schema?)
+exports.getToken = function(user) { //create token (kinda schema?), user - json obj
     return jwt.sign(user, config.secretKey,
         {expiresIn: 3600});
 };
 
 var opts = {}; // options for our jwt strategy to control how the token is extracted from the request or verified.
-// opt to specify how the jw token should be extracted from the incoming request message:
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();//creates a new extractor that looks for the JWT in the authorization header with the scheme 'bearer'
 opts.secretOrKey = config.secretKey; //supply the secret key for this strategy
 
@@ -54,3 +53,14 @@ exports.jwtPassport = passport.use(new JwtStrategy(opts,
 //func to verify a new user authenticate(strategy, options?)
 //don't create sessions because we use token-based authentication
 exports.verifyUser = passport.authenticate('jwt', {session: false});
+
+exports.verifyAdmin = function(req, res, next) {
+    if (!req.user.admin) {
+        var err = new Error('You are not authorized to perform this operation!');
+        err.status = 403;
+        next(err);
+    }
+    else {
+        next();
+    }
+};
