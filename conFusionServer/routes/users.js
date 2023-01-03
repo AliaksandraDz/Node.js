@@ -29,7 +29,7 @@ router.get('/', cors.corsWithOptions, authenticate.verifyUser, authenticate.veri
 })
 
 router.post('/signup', cors.corsWithOptions, (req, res, next) => {
-  User.register(new User({username: req.body.username}), 
+  User.register(new User({username: req.body.username}), //register(user, password, cb) Convenience method to register a new user instance with a given password. Checks if username is unique. 
     req.body.password, (err, user) => {
     if(err) {
       res.statusCode = 500;
