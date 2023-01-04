@@ -13,7 +13,10 @@ promoRouter.use(bodyParser.json());
 promoRouter.route('/')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .get(cors.cors, (req,res,next) => {
-    Promotions.find({})
+    Promotions.find(req.query)
+    //req.query is a request object that is populated by request query strings that are found in a URL.
+    // These query strings are in key-value form. 
+    //They start after the question mark in any URL.
     .then((promotions) => {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
