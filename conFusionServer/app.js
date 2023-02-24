@@ -8,6 +8,7 @@ var FileStore = require('session-file-store')(session);
 var passport = require('passport');
 var authenticate = require('./authenticate');
 var config = require('./config');
+const cors = require('cors');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -17,6 +18,7 @@ var leaderRouter = require('./routes/leaderRouter');
 var uploadRouter = require('./routes/uploadRouter');
 var favoritesRouter = require ('./routes/favoritesRouter');
 var commentRouter = require ('./routes/commentRouter');
+var feedbackRouter = require ('./routes/feedbackRouter');
 
 const mongoose = require('mongoose');
 
@@ -24,6 +26,7 @@ const Dishes = require('./models/dishes');
 const Promotions = require('./models/promotions');
 const Leaders = require('./models/leaders');
 const Favorites = require('./models/favorites');
+const Feedback = require('./models/feedback');
 
 const url = config.mongoUrl;
 const connect = mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false });
@@ -51,6 +54,7 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cors());
 
 // app.use(cookieParser('12345-67890-09876-54321'));
 //Express will use the secret provided to cookie-parser to sign your cookie. 
@@ -101,6 +105,7 @@ app.use('/leaders',leaderRouter);
 app.use('/imageUpload', uploadRouter);
 app.use('/favorites',favoritesRouter);
 app.use('/comments',commentRouter);
+app.use('/feedback',feedbackRouter);
 
 
 // catch 404 and forward to error handler
