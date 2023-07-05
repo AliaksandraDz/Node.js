@@ -7,12 +7,14 @@ const cors = require('./cors');
 const Dishes = require('../models/dishes');
 
 const dishRouter = express.Router();
+console.log(dishRouter);
 
 dishRouter.use(bodyParser.json());
 
 dishRouter.route('/')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); }) //for preflight req, the client sends http OPTIONS req message before sending the actual req
 .get(cors.cors, (req,res,next) => {
+    console.log("get")
     Dishes.find(req.query)
     .populate('comments.author')
     .then((dishes) => {

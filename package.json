@@ -5,6 +5,11 @@
   "scripts": {
     "start": "node ./bin/www"
   },
+  "peerDependenciesMeta": {
+    "mongoose": {
+      "optional": true
+    }
+  },
   "dependencies": {
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.4",
