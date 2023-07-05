@@ -21,7 +21,12 @@ favoritesRouter.route('/')
         if (err) return next(err);
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
-        res.json(favorites);
+        if (favorites==null) {
+            res.json({dishes:[]});
+        }
+        else {
+            res.json(favorites);
+        }
     });
 })
 .post(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
